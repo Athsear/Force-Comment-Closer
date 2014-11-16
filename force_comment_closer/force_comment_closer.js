@@ -1,6 +1,4 @@
 (function($) {
-
-console.log($("div.tablenav.top div").eq(2));
 	$("div.tablenav.top div").eq(1).after(
 		$("<div>")
 		.addClass("force_comment_closer_block alignleft actions")
