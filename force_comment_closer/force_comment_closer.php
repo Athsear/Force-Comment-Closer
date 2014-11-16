@@ -12,16 +12,24 @@
 $rotater = new force_comment_closer();
 
 class force_comment_closer {
-
 	function __construct() {
 		GLOBAL $pagenow;
 		if (is_admin() and $pagenow == "edit.php") {
-			wp_enqueue_script("force_comment_closer",plugin_dir_url( __FILE__ ) ."force_comment_closer.js",array(),"1.0",true);
-			if(filter_input(INPUT_POST,"force_comment_closer") == "true") {
+			add_action("admin_enqueue_scripts",array($this,"set_enqueue"));
+			$input = filter_input(INPUT_POST,"force_comment_closer");
+			if($input == "open" or $input == "close") {
 				GLOBAL $wpdb;
-				$wpdb->query("UPDATE ".$wpdb->posts." SET comment_status = 'close'");
+				$sql = "UPDATE ".$wpdb->posts." SET comment_status = %s";
+				if(filter_input(INPUT_POST,"force_comment_closer") == "close") {
+					$wpdb->query($wpdb->prepare($sql,"close"));
+				} else if(filter_input(INPUT_POST,"force_comment_closer") == "open"){
+					$wpdb->query($wpdb->prepare($sql,"open"));
+				}
 			}
 		}
-		
+	}
+	
+	function set_enqueue() {
+		wp_enqueue_script("force_comment_closer",plugin_dir_url( __FILE__ ) ."force_comment_closer.js",array(),"1.0",true);
 	}
 }
